@@ -1,0 +1,66 @@
+Eureka Server:
+
+http://localhost:8761/
+
+TollRate-Service:
+
+http://localhost:8081/dashboard?stationId=3
+
+
+FastPass-Service:
+
+http://localhost:8082/customerDetails?fastPassId=101
+
+
+
+Hystrix Monitor:
+
+http://localhost:8085/hystrix
+
+then pass turbine or hystrix url:
+
+Hystrix Stream: http://localhost:8085/turbine.stream?cluster=EUREKA-FASTPASS-CONSOLE
+
+http://localhost:8085/turbine.stream?cluster=Eureka-TollRate-Service
+
+
+Turbine:
+
+Multiple Services At one go :
+
+
+http://localhost:8085/hystrix
+
+then pass below Url
+
+http://localhost:8087
+
+
+Zuul :
+
+Scenario 1 - 
+
+http://localhost:8086/trproxy/tollRate/3
+
+Scenario 2 -
+http://localhost:8086/tollProxy/tollRate/3
+
+Scenario 3 - 
+
+http://localhost:8086/eureka-tollrate-service/tollRate/3
+
+http://localhost:8086/eureka-fastpass-service/fastPass?fastPassId=101
+
+Scenario 4 - 
+
+http://localhost:8086/tollProxy/tollRate/1 = Not Work
+
+http://localhost:8086/tollProxy/tollRate/3 - work
+
+Scenario 5 - 
+
+http://localhost:8086/tollProxy/tollRate/3 = Not Work
+
+http://localhost:8086/api/tollProxy/tollRate/3 = Work
+
+http://localhost:8086/api/tollProxy/tollRate/1 = Not Work
