@@ -1,0 +1,127 @@
+Download jars:
+
+https://repo.spring.io/release/org/springframework/cloud/spring-cloud-dataflow-server/2.0.0.RELEASE/spring-cloud-dataflow-server-2.0.0.RELEASE.jar
+
+https://repo.spring.io/release/org/springframework/cloud/spring-cloud-dataflow-shell/2.0.0.RELEASE/spring-cloud-dataflow-shell-2.0.0.RELEASE.jar
+
+https://repo.spring.io/release/org/springframework/cloud/spring-cloud-skipper-server/2.0.0.RELEASE/spring-cloud-skipper-server-2.0.0.RELEASE.jar
+
+https://repo.spring.io/release/org/springframework/cloud/spring-cloud-skipper-shell/2.0.0.RELEASE/spring-cloud-skipper-shell-2.0.0.RELEASE.jar     --- No Need To Run this
+
+
+
+1 - Connection With spring-cloud-dataflow-server.jar = 
+
+java -jar spring-cloud-dataflow-server-2.2.0.RELEASE.jar 
+--spring.datasource.url=jdbc:mysql://localhost:3306/scdf 
+--spring.datasource.username=root 
+--spring.datasource.password=root 
+--spring.datasource.driverClassName=org.mariadb.jdbc.Driver
+--spring.rabbitmq.host=127.0.0.1 
+--spring.rabbitmq.port=5672 
+--spring.rabbitmq.username=test 
+--spring.rabbitmq.password=test
+
+
+One Liner :
+
+java -jar spring-cloud-dataflow-server-2.2.0.RELEASE.jar --spring.datasource.url=jdbc:mysql://localhost:3306/scdf --spring.datasource.username=root --spring.datasource.password=root --spring.datasource.driverClassName=org.mariadb.jdbc.Driver --spring.rabbitmq.host=127.0.0.1 --spring.rabbitmq.port=5672 --spring.rabbitmq.username=test --spring.rabbitmq.password=test
+
+2 - Run spring-cloud-dataflow-shell.jar
+
+java -jar spring-cloud-dataflow-shell-2.2.0.RELEASE.jar
+
+
+3 - import Stream app :
+
+app import --uri https://dataflow.spring.io/Darwin-SR3-stream-applications-rabbit-maven
+
+4 - Create Stream:
+
+This is Http :
+
+stream create --definition "http --port=8086 | file --directory=D:\WorkSpace\PluralSite\MicroservicesCoordinating\Spring-Cloud-DataFlow-Jars\Files\data-flow-out --suffix=txt --name=output" --name pluralsite-hello
+
+5 - Show Stream
+
+stream list
+
+6 - Deploy Stream
+
+stream deploy pluralsite-hello
+
+7 - Now Call Stream on this location and pass any text through postman- (localhost:8086)
+
+This text will be write into provided location.
+
+8 - When we want to upload batch file data
+
+stream create --definition "file --directory=D:/WorkSpace/PluralSite/MicroservicesCoordinating/Spring-Cloud-DataFlow-Jars/Files/data-flow-in --mode=lines | transform --expression=payload+' | processed=true' | output: file --directory=D:/WorkSpace/PluralSite/MicroservicesCoordinating/Spring-Cloud-DataFlow-Jars/Files/data-flow-out --suffix=txt --name=output2" --name filestream1
+
+9 - Then deploy stream
+
+stream deploy filestream1
+
+10 - And then copy paste data in input (data-flow-in) folder, we can get result in output (data-flow-out) folder,
+
+Ex : Use data : 
+
+stationId : 1 | code : 101
+stationId : 2 | code : 102
+
+
+11 - import task app :
+
+app import --uri https://dataflow.spring.io/Elston-GA-task-applications-maven
+
+12 - ask show use - 
+
+app list
+
+13 - create task - 
+
+task create demotask --definition "timestamp --format=\MM-yy\"
+
+14 -Task List - 
+
+task list
+
+15 - launch task -
+
+task launch demotask
+
+16 - Task Exceution list - 
+
+task execution list
+
+17 - Task destroy-
+
+task destroy demotask
+
+--------------------------- DashBoard UI-----------------------
+
+19 - URL-
+
+http://localhost:9393/dashboard
+
+----------------------------- Register App -------------------
+
+20 - Register App - 
+
+app register --name fraudcheck --type processor --uri maven://com.learn:DataFlow-Scoring-Stream-App:jar:0.0.1-SNAPSHOT
+
+21 - Create stream in ui
+
+http --server.port=8086 | split-JSON: splitter --splitter.expression=#jsonpath(payload,'$.station.readings') --spring.cloud.stream.bindings.output.contentType=application/json | fraudcheck --fraud-threshold=25 --fraud.fraud-threshould=25 --spring.cloud.stream.bindings.output.contentType=application/json | log --log.level=INFO
+
+22 - register a task :
+
+app register --name task1 --type task --uri maven://com.learn:DataFlow-Task-1:jar:0.0.1-SNAPSHOT
+
+23 - Get info of task:
+
+app info --type task --name task1
+
+24 - create task in ui
+
+bulktolldata:task1 --destination-file-path=dpath1 --source-file-path=spath1 --control-message=success
